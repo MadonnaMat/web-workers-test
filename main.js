@@ -1,4 +1,5 @@
 var worker = new Worker('worker.js');
+var intervalId = null
 
 var curr_div = null;
 worker.addEventListener('message', function(e){
@@ -22,20 +23,63 @@ worker.addEventListener('message', function(e){
 	}
 }, false);
 
+function withoutWorker(){
+	var powerful = function(){
+		console.log( 'Powerful Begin' );
+		for(var i = 0; i < 1000000000; i++){
+			if(i % 10000000 == 0){
+				curr_div.append('|');
+			}
+		}
+		curr_div = $('<div>For loop over</div>');
+		curr_div.css({
+			'white-space': 'no-wrap'
+		});
+		$('#poster').append(curr_div);
+		console.log( 'Powerful End' );
+	}
+
+	intervalId = setInterval(powerful, 100);
+}
+
 $(document).ready(function(){
-	curr_div = $('<div>Begin</div>');
-	curr_div.css({
-		'white-space': 'no-wrap'
-	});
 	var started = false;
 	$('#btn').on('click', function(){
 		if (!started) {
 			started = true;
 			console.log('starting worker');
-			worker.postMessage({cmd: 'begin'}); }
+			curr_div = $('<div>Begin</div>');
+			curr_div.css({
+				'white-space': 'no-wrap'
+			});
+			$('#poster').append(curr_div);
+			$(this).text('Stop Worker');
+			worker.postMessage({cmd: 'begin'}); 
+		}
 		else {
 			started = false;
+			$(this).text('Start Worker');
 			worker.postMessage({cmd: 'end'}); }
+	});
+	var started2 = false;
+	$('#btn2').on('click', function(){
+		if (!started2) {
+			started2 = true;
+			console.log('starting interval');
+			$(this).text('Stop Interval');
+			curr_div = $('<div>Begin</div>');
+			curr_div.css({
+				'white-space': 'no-wrap'
+			});
+			$('#poster').append(curr_div);
+			withoutWorker();
+		}
+		else {
+			started2 = false;
+			console.log('ending interval');
+			$(this).text('Start Interval');
+			clearInterval(intervalId);
+		}
 	});
 	var anim_div = $('<div>');
 	$('body').append(anim_div);
