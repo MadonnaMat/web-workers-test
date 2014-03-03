@@ -91,12 +91,22 @@ $(document).ready(function(){
 		top: 0,
 		left: 0
 	});
+	curr_top = (Math.random() * $(window).height()) + 'px';
+	curr_left = (Math.random() * $(window).width()) + 'px';
 	setInterval(function(){
-		var curr_top = anim_div.css('top');
-		var curr_left = anim_div.css('left');
+		curr_top = parseFloat(curr_top);
+		curr_left = parseFloat(curr_left);
+		var next_top = curr_top + ((40 * Math.random()) - 20);
+		var next_left = curr_left + ((40 * Math.random()) - 20);
+		if(next_top < 0) next_top = 0;
+		if(next_left < 0) next_left = 0;
+		if(next_top > $(window).height()) next_top = $(window).height();
+		if(next_left > $(window).width()) next_left = $(window).width();
 		anim_div.css({
-			top: (10 * Math.random()),
-			left: $(window).width() * Math.random()
+			top: next_top,
+			left: next_left
 		});
+		curr_top = anim_div.css('top');
+		curr_left = anim_div.css('left');
 	}, 100)
 });
